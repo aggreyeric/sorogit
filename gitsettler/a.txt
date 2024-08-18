@@ -1,0 +1,49 @@
+use soroban_sdk::{contracttype, Address, Env, BytesN};
+
+pub fn transfer_xlm(env: &Env, to: Address, amount: i128) {
+    let xlm_id = BytesN::from_array(env, &[/* XLM contract ID */]);
+    let token = token::Client::new(env, &xlm_id);
+    token.transfer(&env.current_contract_address(), &to, &amount);
+}
+
+
+
+
+https://stellar.expert/explorer/testnet/contract/CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
+
+stellar contract build
+
+stellar contract optimize --wasm  issuebidding.wasm
+
+stellar contract deploy --wasm  issuebidding.optimized.wasm --source eric --network testnet 
+
+
+CAZ73CMVYHSONC62NYYLXVMIBTFUP2U4B2BIGHA2O6A7AHIPMOQONXK3
+
+latest => CAYIOHHUSPBP3KC5KDKB6YAKYWISIH5HPSKTD3GYAS56NM4AVHD4JOHV
+
+
+stellar contract invoke --id CAZ73CMVYHSONC62NYYLXVMIBTFUP2U4B2BIGHA2O6A7AHIPMOQONXK3 --source eric --network testnet -- initialize  --to RPC
+stellar contract invoke \
+  --id CAZ73CMVYHSONC62NYYLXVMIBTFUP2U4B2BIGHA2O6A7AHIPMOQONXK3 \
+  --source eric \
+  --network testnet \
+  -- \
+  initialize \
+  --to RPC
+
+
+
+
+  stellar contract invoke \
+  --id CAZ73CMVYHSONC62NYYLXVMIBTFUP2U4B2BIGHA2O6A7AHIPMOQONXK3 \
+  --source eric \
+  --network testnet \
+  -- \
+  initialize \
+  --param1 GA7KOUZLPX7T45WLNYY6KFZZGJYMNI4H5J5TN3HHSVGL5BFQ4YCTQ4QR
+
+
+
+18th August 2024 => CD3D2DEWLEU73HBLTZEFQ6246T2MQTW72MXFRQC66FUA73XMVIQVF4NJ
+CDZIPTNPN24RMGK3CS6O66UMJVKBZHLGLOGLMOESW5RGSLX7VWWVCGMP
