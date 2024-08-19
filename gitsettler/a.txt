@@ -47,3 +47,13 @@ stellar contract invoke \
 
 18th August 2024 => CD3D2DEWLEU73HBLTZEFQ6246T2MQTW72MXFRQC66FUA73XMVIQVF4NJ
 CDZIPTNPN24RMGK3CS6O66UMJVKBZHLGLOGLMOESW5RGSLX7VWWVCGMP
+
+
+
+stellar contract deploy \
+  --wasm target/wasm32-unknown-unknown/release/gitissuebidding.wasm \
+  --source book \
+  --network testnet
+
+
+  #  CB56F3QXWKZ5N4EW2PEVN67PNC3ZCL4JZERARD6A6D6QHLVEPAWS6EWU

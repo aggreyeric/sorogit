@@ -146,4 +146,18 @@ async function addIssue(issueid, poster, githubName, repositoryName, reward, end
   }
 
 
-export {addIssue, addBidder, addBid, removeIssueAndBids, getAllBiddersForIssue, getAllIssues, addBidWithBidder}
+  async function getAllIssuesWithBidForPerson(person) {
+    const db = await openDb();
+    const issues = await db.all(`
+      SELECT DISTINCT b.issueid, b.github_name, b.repository_name
+      FROM Bid b
+      JOIN Bidder bd ON b.bidder_id = bd.id
+      WHERE bd.person = ?
+    `, [person]);
+    await db.close();
+    return issues;
+  }
+
+
+
+export {addIssue, addBidder, addBid, removeIssueAndBids, getAllBiddersForIssue, getAllIssues, addBidWithBidder, getAllIssuesWithBidForPerson}

@@ -135,4 +135,4 @@ async function RejectWork() {
     // console.log((result._value[0]._value).toString());
     // console.log((result._value[1]._value).toString());
 }
-addIssue().catch(console.error)
+initialize()

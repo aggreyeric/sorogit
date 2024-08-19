@@ -12,7 +12,7 @@ async function exe(command) {
 
 let rpcUrl = "https://soroban-testnet.stellar.org"
 
-let contractAddress = 'CAYIOHHUSPBP3KC5KDKB6YAKYWISIH5HPSKTD3GYAS56NM4AVHD4JOHV'
+let contractAddress = 'CB56F3QXWKZ5N4EW2PEVN67PNC3ZCL4JZERARD6A6D6QHLVEPAWS6EWU'
 
 
 let params = {

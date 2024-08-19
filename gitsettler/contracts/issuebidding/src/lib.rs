@@ -9,15 +9,18 @@ mod types;
 
 use types::{AdminData, DataKey, IssueData, Bidder, StateofIssue};
 use soroban_sdk::{
-    contract, contractimpl, token, Address, Env, String, Symbol, Vec 
+    contract, contractimpl, contractmeta, token, Address, Env, String, Symbol, Vec , symbol_short
 };
 
 
+contractmeta!(
+    key = "desc",
+    val = "Soroban Contract for Biding on GitHub Issues and Get Paid in Crypto"
+);
 
 
 
-
- trait IssueBiddingContractTrait {
+ pub trait GitIssueBiddingContractTrait {
      fn initialize(env:Env, admin:Address,  commission: i128);
 
     fn add_issue(
@@ -48,6 +51,8 @@ use soroban_sdk::{
     fn get_data(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol)->IssueData;
     fn return_bidder(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol)->Vec<Bidder>;
 
+    fn  return_bidder_status(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol)->(Address, Symbol);
+
    
     
 }
@@ -58,11 +63,11 @@ use soroban_sdk::{
 
 
 #[contract]
-pub struct IssueBiddingContract;
+pub struct GitIssueBiddingContract;
 
 
 #[contractimpl]
-impl  IssueBiddingContractTrait for  IssueBiddingContract {
+impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
 
 
      fn initialize(env: Env, admin: Address, commission: i128) {
@@ -228,6 +233,25 @@ fn return_bidder(env: Env, issue_id: u64, github_name:Symbol, repository_name:Sy
     get_issue_data(env, issue_id, github_name, repository_name).unwrap().bidders
 
 
+}
+
+fn  return_bidder_status(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol)->(Address, Symbol){
+
+
+    let issue_data:IssueData = get_issue_data(env, issue_id, github_name, repository_name).expect("Issue not found");
+
+
+    let state: Symbol = match issue_data.state {
+
+        StateofIssue::Created => symbol_short!("Created"),
+        StateofIssue::Started => symbol_short!("Started"),
+        StateofIssue::Completed => symbol_short!("Completed"),
+        StateofIssue::Rejected => symbol_short!("Rejected"),
+        StateofIssue::Accepted => symbol_short!("Accepted"),
+        
+    };
+
+    (issue_data.assigned_to, state)
 }
 
 }

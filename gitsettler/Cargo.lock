@@ -457,6 +457,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
+name = "gitissuebidding"
+version = "0.0.0"
+dependencies = [
+ "soroban-sdk",
+ "stellar-strkey",
+]
+
+[[package]]
 name = "group"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -559,14 +567,6 @@ name = "indexmap-nostd"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e04e2fd2b8188ea827b32ef11de88377086d690286ab35747ef7f9bf3ccb590"
-
-[[package]]
-name = "issuebidding"
-version = "0.0.0"
-dependencies = [
- "soroban-sdk",
- "stellar-strkey",
-]
 
 [[package]]
 name = "itertools"

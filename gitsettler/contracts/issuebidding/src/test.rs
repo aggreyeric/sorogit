@@ -47,13 +47,13 @@ fn create_isssuebidding_contract<'a>(
     env: &'a Env,
     admin: &'a Address,
     token: &'a Address,
-) -> IssueBiddingContractClient<'a> {
+) -> GitIssueBiddingContractClient<'a> {
     let addr = String::from_str(&env,"CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC");
 
     // fn initialize(env: Env, admin: Address, token: Address, commission: i128) {
     
     let cid = Address::from_string(&addr);
-    let client = IssueBiddingContractClient::new(env, &env.register_contract(&cid, IssueBiddingContract));
+    let client = GitIssueBiddingContractClient::new(env, &env.register_contract(&cid, IssueBiddingContract));
     client.initialize(admin,   &10);
     client
 }

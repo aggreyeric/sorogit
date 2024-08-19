@@ -1,7 +1,42 @@
 "use server";
 
-import {addIssue, getAllIssues, addBidWithBidder} from "../db/dbfuns"
+import {addIssue, getAllIssues, addBidWithBidder, getAllBiddersForIssue, getAllIssuesWithBidForPerson} from "../db/dbfuns"
 import {addIssueSoroban} from "../sorobanfns/usesorrobanfns"
+
+
+
+export async function getAllIssuesWithBidForPersonAction(person) {
+
+    try {
+        const issues = await getAllIssuesWithBidForPerson(person);
+
+        return issues;
+    }
+    catch (error) {
+        console.error(error);
+        return false
+    }
+    
+}
+
+
+
+
+
+
+export async function getAllBiddersForIssueAction(issueid, githubName, repositoryName) {
+
+    try {
+        const bidders = await getAllBiddersForIssue(issueid, githubName, repositoryName);
+
+        return bidders;
+    }
+    catch (error) {
+        console.error(error);
+        return false
+    }
+    
+}
 
 
 
@@ -24,29 +59,30 @@ export async function getAllIssuesData() {
 
 
 export async function formAddIssue( formdata) {
-    // try{
-    //     const result = await addIssueSoroban(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime);
+    try{
+        const result = await addIssueSoroban(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime);
+        console.log(result)
 
-    //     if(result){
-    //         await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
-    //     }
-    //     return result;
-    // }
-    // catch(error){
-    //     console.error(error);
-    //     return false
-       
-    // }
-
-
-    try {   await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
-
-        return true
+        if(result){
+            await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
+        }
+        return result;
     }
-    catch (error) {
+    catch(error){
         console.error(error);
         return false
+       
     }
+
+
+    // try {   await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
+
+    //     return true
+    // }
+    // catch (error) {
+    //     console.error(error);
+    //     return false
+    // }
 
    
 

@@ -11,7 +11,7 @@ import { getPublicKey } from '@stellar/freighter-api';
 
 
 let rpcUrl = "https://soroban-testnet.stellar.org";
-let contractAddress = "CD3D2DEWLEU73HBLTZEFQ6246T2MQTW72MXFRQC66FUA73XMVIQVF4NJ"
+let contractAddress = 'CB56F3QXWKZ5N4EW2PEVN67PNC3ZCL4JZERARD6A6D6QHLVEPAWS6EWU'
 
 const accountToScVal = (account) => new Address(account).toScVal();
 
@@ -89,11 +89,13 @@ async function addIssueSoroban(issueId, poster, githubName, repositoryName, rewa
       stringToSymbol(endTime)
     ];
     let result = await contractInt(caller, 'add_issue', values);
-    let [symbol1, symbol2, u64Value] = result._value;
-    console.log(symbol1.toString());
-    console.log(symbol2.toString());
-    console.log(u64Value.toString());
-    return [symbol1, symbol2, u64Value];
+    console.log(result);
+    return true;
+    // let [symbol1, symbol2, u64Value] = result._value;
+    // console.log(symbol1.toString());
+    // console.log(symbol2.toString());
+    // console.log(u64Value.toString());
+    // return [symbol1, symbol2, u64Value];
   }
 
   export { addIssueSoroban }
