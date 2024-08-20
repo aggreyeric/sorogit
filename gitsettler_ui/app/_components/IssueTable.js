@@ -2,7 +2,7 @@
 
 import React,{useState, useEffect} from 'react';
 
-import {getAllBiddersForIssueAction} from '../actions';
+import {getAllBiddersForIssueAction} from '../_fns/actions';
 
 
 

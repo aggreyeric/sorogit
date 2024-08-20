@@ -1,7 +1,7 @@
 import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
-import { WalletProvider } from "@/sorobanfns/walletcontext";
+import { WalletProvider } from "@/app/_fns/walletcontext";
 
 
 const inter = Inter({ subsets: ["latin"] });

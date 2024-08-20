@@ -1,8 +1,8 @@
 "use client";
 import  PopupNotification  from "../_components/PopupNotification";
-import {formAddIssue} from "../actions"
+import {formAddIssue} from "../_fns/actions"
 import { useState } from "react";
-import {retrievePublicKey} from "../../sorobanfns/fns"
+import {retrievePublicKey} from "../_fns/fns"
 
 
 const IssueForm = ({ open }) => {

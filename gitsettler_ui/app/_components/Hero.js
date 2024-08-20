@@ -1,8 +1,11 @@
 "use client";
 
+
+
+
 import styles from "./Hero.module.css";
-import { useWallet } from "@/sorobanfns/walletcontext";
-import { checkConnection } from "@/sorobanfns/fns";
+import { useWallet } from "@/app/_fns/walletcontext";
+import { checkConnection } from "@/app/_fns/fns";
 import { useRouter } from "next/navigation";
 
 const Hero = () => {

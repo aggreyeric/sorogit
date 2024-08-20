@@ -6,12 +6,14 @@ import {
     BASE_FEE,
     nativeToScVal, Address
 } from "@stellar/stellar-sdk";
-import { userSignTransaction } from './fns';
+import { userSignTransaction} from './fns';
 import { getPublicKey } from '@stellar/freighter-api';
 
 
+
 let rpcUrl = "https://soroban-testnet.stellar.org";
-let contractAddress = 'CB56F3QXWKZ5N4EW2PEVN67PNC3ZCL4JZERARD6A6D6QHLVEPAWS6EWU'
+
+let contractAddress = 'CCYJRBJ2BSLX3OW2F752T66RZMSOOIXXET4UTQUTFXB5W3E446WU6GVW'
 
 const accountToScVal = (account) => new Address(account).toScVal();
 
@@ -79,7 +81,9 @@ async function contractInt(caller, functName, values) {
 
 
 async function addIssueSoroban(issueId, poster, githubName, repositoryName, reward, endTime) {
-    let caller = await getPublicKey();
+    // let caller = await  getPublicKey();
+    console.log(issueId, poster, githubName, repositoryName, reward, endTime)
+ 
     let values = [
       numberToU64(issueId),
       accountToScVal(poster),
@@ -88,14 +92,25 @@ async function addIssueSoroban(issueId, poster, githubName, repositoryName, rewa
       numberToI128(reward),
       stringToSymbol(endTime)
     ];
-    let result = await contractInt(caller, 'add_issue', values);
+    let result = await contractInt(poster, 'add_issue', values);
     console.log(result);
-    return true;
-    // let [symbol1, symbol2, u64Value] = result._value;
-    // console.log(symbol1.toString());
-    // console.log(symbol2.toString());
-    // console.log(u64Value.toString());
-    // return [symbol1, symbol2, u64Value];
+    return true
   }
 
-  export { addIssueSoroban }
+  
+   async function soroAddIssue(issueId, poster, githubName, repositoryName, reward, endTime) {
+    let issue_id = numberToU64(issueId)
+    let posterValue = accountToScVal(poster)
+    let github_name = stringToSymbol(githubName)
+    let repository_name = stringToSymbol(repositoryName)
+    let rewardValue = numberToI128(reward)
+    let end_time = stringToSymbol(endTime)
+    let values = [issue_id, posterValue, github_name, repository_name, rewardValue, end_time]
+    let result = await contractInt(posterValue, 'add_issue', values);
+    console.log(result)
+    return true
+  }
+
+
+
+  export { addIssueSoroban, soroAddIssue }

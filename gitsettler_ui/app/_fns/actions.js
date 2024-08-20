@@ -1,7 +1,7 @@
 "use server";
 
-import {addIssue, getAllIssues, addBidWithBidder, getAllBiddersForIssue, getAllIssuesWithBidForPerson} from "../db/dbfuns"
-import {addIssueSoroban} from "../sorobanfns/usesorrobanfns"
+import {addIssue, getAllIssues, addBidWithBidder, getAllBiddersForIssue, getAllIssuesWithBidForPerson} from "../../db/dbfuns"
+import {soroAddIssue} from "./usesorrobanfns"
 
 
 
@@ -59,30 +59,32 @@ export async function getAllIssuesData() {
 
 
 export async function formAddIssue( formdata) {
-    try{
-        const result = await addIssueSoroban(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime);
-        console.log(result)
+    // try{
+    //    
+    //     console.log(result)
 
-        if(result){
-            await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
-        }
-        return result;
-    }
-    catch(error){
-        console.error(error);
-        return false
-       
-    }
-
-
-    // try {   await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
-
-    //     return true
+    //     if(result){
+    //         await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
+    //     }
+    //     return result;
     // }
-    // catch (error) {
+    // catch(error){
     //     console.error(error);
     //     return false
+       
     // }
+
+
+    try {   
+        
+        await soroAddIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime);
+        await addIssue(formdata.issueId, formdata.poster, formdata.githubName, formdata.repositoryName, formdata.reward, formdata.endTime, formdata.description);
+        return true
+    }
+    catch (error) {
+        console.error(error);
+        return false
+    }
 
    
 

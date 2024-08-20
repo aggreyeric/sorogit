@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import IssueTableBits from '../_components/IssueTableBids'
-import { getAllIssuesData } from '../actions';
+import { getAllIssuesData } from '../_fns/actions';
 
 
 function Bids() {

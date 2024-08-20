@@ -2,15 +2,22 @@
 
 import Link from "next/link";
 import styles from "./Header.module.css";
-import { useWallet } from "@/sorobanfns/walletcontext";
-import { checkConnection } from "@/sorobanfns/fns";
+import { useWallet } from "@/app/_fns/walletcontext";
+import { checkConnection, retrievePublicKey } from "@/app/_fns/fns";
+import { useEffect } from "react";
+
+
+
+
 
 const Header = () => {
-  const { _, __, isConnected, setIsConnected } =
-    useWallet();
+  const { walletAddress, setWalletAddress, isConnected, setIsConnected } =useWallet();
+
+
 
   async function connectWallet() {
     await checkConnection();
+    setWalletAddress(await retrievePublicKey());
     setIsConnected(true);
   }
 

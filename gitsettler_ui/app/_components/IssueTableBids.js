@@ -2,8 +2,8 @@
 
 import React,{useState, useEffect} from 'react';
 import BidForm from './AddBid';
-import {retrievePublicKey} from "../../sorobanfns/fns"
-import {getAllIssuesWithBidForPersonAction} from "../actions"
+import {retrievePublicKey} from "../_fns/fns"
+import {getAllIssuesWithBidForPersonAction} from "../_fns/actions"
 
 
 

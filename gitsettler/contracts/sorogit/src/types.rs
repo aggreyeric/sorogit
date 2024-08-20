@@ -55,7 +55,7 @@ pub struct IssueData {
     pub assigned_to: Address,
 }
 
- impl IssueData {
+  impl IssueData {
     pub fn new_issue(
         env: Env,
         isssueid: u64,

@@ -6,10 +6,9 @@
 
 #![no_std]
 mod types;
-
 use types::{AdminData, DataKey, IssueData, Bidder, StateofIssue};
 use soroban_sdk::{
-    contract, contractimpl, contractmeta, token, Address, Env, String, Symbol, Vec , symbol_short
+    contract, contractimpl, contractmeta, symbol_short, token, vec, Address, BytesN, Env, String, Symbol, Vec
 };
 
 
@@ -18,9 +17,17 @@ contractmeta!(
     val = "Soroban Contract for Biding on GitHub Issues and Get Paid in Crypto"
 );
 
+#[contract]
+pub struct SoroGitContract;
 
+ pub trait SoroGitContractTrait {
+    // Upgrade this contract.
+    // Admin authorization required.
 
- pub trait GitIssueBiddingContractTrait {
+    fn upgrade(e: Env, wasm_hash: BytesN<32>);
+    // Retrieve the contract version.
+    fn version(env: Env) -> Vec<u32>;
+    
      fn initialize(env:Env, admin:Address,  commission: i128);
 
     fn add_issue(
@@ -62,16 +69,21 @@ contractmeta!(
 
 
 
-#[contract]
-pub struct GitIssueBiddingContract;
+
 
 
 #[contractimpl]
-impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
+impl  SoroGitContractTrait for  SoroGitContract {
 
+
+    fn upgrade(env: Env, wasm_hash: BytesN<32>) {
+        let admin = get_admin_data(&env).0;
+        admin.require_auth();
+        env.deployer().update_current_contract_wasm(wasm_hash);
+    }
 
      fn initialize(env: Env, admin: Address, commission: i128) {
-        assert!( !env.storage().instance().has(&DataKey::AdminData),   "already initialized");
+        assert!( !env.storage().persistent().has(&DataKey::AdminData),   "already initialized");
         let token = get_native_asset_address(&env);
         put_admin_data(&env, admin, commission, token);
     }
@@ -106,8 +118,7 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
       
         pay_to_contract(&env, &poster, reward);
    
-        env.storage().instance().set(&DataKey::IssueData(github_name.clone(), repository_name.clone(),isssueid), &issue_data);
-        env.storage().instance().extend_ttl(100, 100);
+        env.storage().persistent().set(&DataKey::IssueData(github_name.clone(), repository_name.clone(),isssueid), &issue_data);
         (github_name, repository_name, isssueid)
     }
 
@@ -119,14 +130,14 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
 
         person.require_auth();
         // Retrieve the issue data
-        let mut issue_data:IssueData = env.storage().instance().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
+        let mut issue_data:IssueData = env.storage().persistent().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
 
         // Add the bidder to the issue data
         issue_data.bidders.push_back(Bidder { person, bidder_github_name });
 
         // Update the issue data in storage
-        env.storage().instance().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
-        env.storage().instance().extend_ttl(100, 100);
+        env.storage().persistent().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
+       
 
         issue_id
     }
@@ -139,7 +150,7 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
 
         poster.require_auth();
         // Retrieve the issue data
-        let mut issue_data:IssueData = env.storage().instance().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
+        let mut issue_data:IssueData = env.storage().persistent().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
         assert_eq!(issue_data.poster, poster);
 
         // Find the bidder and assign the issue to them
@@ -153,8 +164,8 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
         issue_data.state = StateofIssue::Started;
 
         // Update the issue data in storage
-        env.storage().instance().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
-        env.storage().instance().extend_ttl(100, 100);
+        env.storage().persistent().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
+
         issue_id
     }
 
@@ -162,11 +173,11 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
 
     fn completed_bits(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol, user:Address)->u64 {
        user.require_auth();
-        let mut issue_data:IssueData = env.storage().instance().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
+        let mut issue_data:IssueData = env.storage().persistent().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
         issue_data.state = StateofIssue::Completed;
         assert_eq!(issue_data.assigned_to, user);
        
-        env.storage().instance().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
+        env.storage().persistent().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
         issue_id
 
         
@@ -177,7 +188,7 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
 
     fn release_payment(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol, poster:Address)->u64 {
         poster.require_auth();
-        let mut issue_data:IssueData = env.storage().instance().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
+        let mut issue_data:IssueData = env.storage().persistent().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
         issue_data.state = StateofIssue::Accepted;
         assert_eq!(issue_data.poster, poster);
         assert!(get_contract_balance(&env)> issue_data.reward);
@@ -186,7 +197,7 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
         transfer_to_gituser(&env, &issue_data.assigned_to,  &issue_data.reward);
     
         // Update the issue data in storage
-        env.storage().instance().set(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id), &issue_data);
+        env.storage().persistent().set(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id), &issue_data);
         remove_issue(env, issue_id, github_name, repository_name);
         issue_id
    
@@ -199,14 +210,14 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
         let admin = admin_data.0;
         admin.require_auth();
 
-        let mut issue_data:IssueData = env.storage().instance().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
+        let mut issue_data:IssueData = env.storage().persistent().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
         issue_data.state = StateofIssue::Accepted;
         assert!(get_contract_balance(&env)> issue_data.reward);
         // Transfer the amount to the winner
         transfer_to_gituser(&env, &issue_data.assigned_to,  &issue_data.reward);
     
         // Update the issue data in storage
-        env.storage().instance().set(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id), &issue_data);
+        env.storage().persistent().set(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id), &issue_data);
 
         remove_issue(env, issue_id, github_name, repository_name);
         issue_id
@@ -216,10 +227,10 @@ impl  GitIssueBiddingContractTrait for  GitIssueBiddingContract {
 fn reject_complete(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol, poster: Address)->u64 {
  
     poster.require_auth();
-    let mut issue_data:IssueData = env.storage().instance().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
+    let mut issue_data:IssueData = env.storage().persistent().get(&DataKey::IssueData(github_name.clone(), repository_name.clone(),issue_id)).expect("Issue not found");
     issue_data.state = StateofIssue::Rejected;
     // Update the issue data in storage
-    env.storage().instance().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
+    env.storage().persistent().set(&DataKey::IssueData(github_name, repository_name,issue_id), &issue_data);
     issue_id
 
 }
@@ -254,6 +265,11 @@ fn  return_bidder_status(env: Env, issue_id: u64, github_name:Symbol, repository
     (issue_data.assigned_to, state)
 }
 
+// returns version  "0.1.0"
+fn version(env: Env) -> Vec<u32> {
+    vec![&env, 0, 1, 0] 
+}
+
 }
 
 
@@ -262,13 +278,13 @@ fn  return_bidder_status(env: Env, issue_id: u64, github_name:Symbol, repository
 
 
 fn put_admin_data(env: &Env, admin: Address, commission: i128, accepted_token: Address) {
-    env.storage().instance().set(&DataKey::AdminData, &AdminData { admin, commission, accepted_token });
+    env.storage().persistent().set(&DataKey::AdminData, &AdminData { admin, commission, accepted_token });
 }
 
 
 fn get_admin_data(env: &Env) -> (Address, i128, Address) {
    let admin_data :AdminData = env.storage()
-        .instance()
+        .persistent()
         .get(&DataKey::AdminData)
         .expect("not initialized");
    (admin_data.admin, admin_data.commission, admin_data.accepted_token)
@@ -280,7 +296,7 @@ fn get_admin_data(env: &Env) -> (Address, i128, Address) {
 fn get_contract_balance(env: &Env) -> i128 {
     
     let admin_data :AdminData = env.storage()
-        .instance()
+        .persistent()
         .get(&DataKey::AdminData)
         .expect("not initialized");
     let client = token::Client::new(env, &admin_data.accepted_token);
@@ -306,13 +322,13 @@ fn pay_to_contract(env: &Env, from_poster: &Address, reward: i128) {
 
 
 fn get_issue_data(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol) -> Option<IssueData> {
-    env.storage().instance().get(&DataKey::IssueData(github_name, repository_name,issue_id))
+    env.storage().persistent().get(&DataKey::IssueData(github_name, repository_name,issue_id))
 }
 
 
 fn remove_issue(env: Env, issue_id: u64, github_name:Symbol, repository_name:Symbol)->u64 {
 
-    env.storage().instance().remove(&DataKey::IssueData(github_name, repository_name,issue_id));
+    env.storage().persistent().remove(&DataKey::IssueData(github_name, repository_name,issue_id));
     issue_id
  
  }

@@ -2,7 +2,7 @@
 
 import IssueForm from "../_components/AddIssue";
 import IssueTable from "../_components/IssueTable";
-import { getAllIssuesData } from "../actions";
+import { getAllIssuesData } from "../_fns/actions";
 import { useEffect, useState } from "react";
 
 export default function Home() {

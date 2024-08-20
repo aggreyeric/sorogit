@@ -1,8 +1,11 @@
 "use client";
 import PopupNotification from "../_components/PopupNotification";
-import { AddBid } from "../actions";
+import { AddBid } from "../_fns/actions";
 import { useState } from "react";
-import { retrievePublicKey } from "../../sorobanfns/fns";
+import { retrievePublicKey } from "../_fns/fns";
+
+
+
 
 const BidForm = ({ issueid, githubName, repositoryName, open }) => {
   const [ userGithubName, setUserGithubName] = useState("");
